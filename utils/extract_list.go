@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os/exec"
-	"strings"
 )
 
 func ExtractList() []string {
@@ -42,7 +41,6 @@ func ExtractList() []string {
 	var repos []string
 
 	for _, lines := range outputLines {
-		lines = strings.Trim(lines, "\"")
 		repos = append(repos, lines)
 	}
 

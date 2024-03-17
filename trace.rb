@@ -8,7 +8,7 @@ class GitTrace
   def list
     recursive_read
     truncate_git_folders
-    join_string_paths
+    @git_paths.each { |path| puts path.join("/") }
   end
 
   def recursive_read
@@ -20,14 +20,11 @@ class GitTrace
   def truncate_git_folders
     @git_folders.each do |entry_name|
       dot_path = entry_name.split("/")
-      @git_paths << dot_path if dot_path.last == ".git"
-    end
-  end
 
-  def join_string_paths
-    @git_paths.map do |git_path|
-      git_path.pop
-      p git_path.join("/")
+      if dot_path.last == ".git"
+        dot_path.pop # get rid of ".git"
+        @git_paths << dot_path
+      end
     end
   end
 
