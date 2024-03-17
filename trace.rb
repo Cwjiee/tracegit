@@ -29,6 +29,7 @@ class GitTrace
 
   def join_string_paths
     @splited_paths.each do |git_path|
+      git_path.pop
       @git_paths << git_path.join("/")
     end
   end
