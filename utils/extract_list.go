@@ -8,7 +8,7 @@ import (
 )
 
 func ExtractList() []string {
-	cmd := exec.Command("ruby", "/Users/weijie/code/GitTrace/readgit.rb")
+	cmd := exec.Command("ruby", "/Users/weijie/code/GitTrace/trace.rb")
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
