@@ -1,6 +1,6 @@
 class GitTrace
-  def initialize
-    @path = "/Users/weijie/code"
+  def initialize()
+    @path = $work_dir
     @git_folders = []
     @git_paths = []
   end
@@ -39,4 +39,5 @@ class GitTrace
 
 end
 
+$work_dir = ARGV[0]
 GitTrace.new.list

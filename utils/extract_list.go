@@ -3,11 +3,24 @@ package utils
 import (
 	"bufio"
 	"fmt"
+	"log"
+	"os"
 	"os/exec"
+	"strings"
 )
 
 func ExtractList() ([]string, []string) {
-	cmd := exec.Command("ruby", "/Users/weijie/code/GitTrace/trace.rb")
+	pathExist := pathExist()
+
+	workingDir := getPath(pathExist)
+
+	dir, err := os.Getwd()
+	if err != nil {
+		fmt.Println("error getting current directory: ", err)
+	}
+
+	currentpath := dir + "/trace.rb"
+	cmd := exec.Command("ruby", currentpath, workingDir)
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -61,4 +74,49 @@ func ExtractList() ([]string, []string) {
 	}
 
 	return repos, desc
+}
+
+func pathExist() bool {
+	f, err := os.Stat("data/path")
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+
+	if f.Size() > 0 {
+		return true
+	}
+
+	return false
+}
+
+func getPath(pathExist bool) string {
+
+	var path string
+
+	if !pathExist {
+		fmt.Println("Enter a path:")
+		_, err := fmt.Scan(&path)
+		if err != nil {
+			log.Fatal(err)
+			return ""
+		}
+
+		data := []byte(path)
+		err2 := os.WriteFile("data/path", data, 0644)
+		if err2 != nil {
+			log.Fatal(err)
+		}
+
+	} else {
+		data, err := os.ReadFile("data/path")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		path = string(data)
+		path = strings.TrimSpace(path)
+	}
+
+	return path
 }
