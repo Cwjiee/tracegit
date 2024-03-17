@@ -1,4 +1,4 @@
-module charm-ui
+module github.com/Cwjiee/git-trace
 
 go 1.22.1
 

@@ -3,21 +3,12 @@ package utils
 import (
 	"bufio"
 	"fmt"
-	"os"
 	"os/exec"
-	"path"
 	"strings"
 )
 
 func ExtractList() []string {
-	currentPath, err := os.Getwd()
-	if err != nil {
-		fmt.Println("error finding current direcotory: ", err)
-		return nil
-	}
-
-	rubyPath := path.Join(currentPath, "readgit.rb")
-	cmd := exec.Command("ruby", rubyPath)
+	cmd := exec.Command("ruby", "/Users/weijie/code/GitTrace/readgit.rb")
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {

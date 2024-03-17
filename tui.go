@@ -1,9 +1,10 @@
 package main
 
 import (
-	"charm-ui/utils"
 	"fmt"
 	"os"
+
+	"github.com/Cwjiee/git-trace/utils"
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
