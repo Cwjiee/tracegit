@@ -47,7 +47,6 @@ func ExtractList() ([]string, []string) {
 	}
 
 	for _, lines := range data {
-		fmt.Println(lines)
 		if lines == "DescSec" {
 			data = data[1:]
 			break
@@ -58,7 +57,6 @@ func ExtractList() ([]string, []string) {
 	}
 
 	for _, lines := range data {
-		fmt.Println(lines)
 		desc = append(desc, lines)
 	}
 

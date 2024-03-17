@@ -1,4 +1,4 @@
-module github.com/Cwjiee/git-trace
+module github.com/Cwjiee/tracegit
 
 go 1.22.1
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Cwjiee/git-trace/utils"
+	"github.com/Cwjiee/tracegit/utils"
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
