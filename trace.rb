@@ -8,7 +8,16 @@ class GitTrace
   def list
     recursive_read
     truncate_git_folders
-    @git_paths.each { |path| puts path.join("/") }
+
+    @git_paths.map! { |git_path| git_path.join("/") }
+    @git_paths.each { |git_path| puts git_path }
+
+    puts "DescSec"
+
+    @git_paths.each do |git_path|
+      pathname = "#{@path}/#{git_path}/.git/description"
+      puts File.read(pathname)
+    end
   end
 
   def recursive_read

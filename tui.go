@@ -12,6 +12,7 @@ import (
 )
 
 var repos []string
+var desc []string
 var docStyle = lipgloss.NewStyle().Margin(1, 2)
 
 type item struct {
@@ -51,11 +52,11 @@ func (m model) View() string {
 }
 
 func main() {
-	repos = utils.ExtractList()
+	repos, desc = utils.ExtractList()
 	items := make([]list.Item, 0)
 
-	for _, repo := range repos {
-		items = append(items, item{title: repo, desc: "default description"})
+	for i, repo := range repos {
+		items = append(items, item{title: repo, desc: desc[i]})
 	}
 
 	m := model{list: list.New(items, list.NewDefaultDelegate(), 0, 0)}

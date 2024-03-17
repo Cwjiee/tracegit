@@ -6,18 +6,18 @@ import (
 	"os/exec"
 )
 
-func ExtractList() []string {
+func ExtractList() ([]string, []string) {
 	cmd := exec.Command("ruby", "/Users/weijie/code/GitTrace/trace.rb")
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		fmt.Println("Error creating StdoutPipe:", err)
-		return nil
+		return nil, nil
 	}
 
 	if err := cmd.Start(); err != nil {
 		fmt.Println("error starting command:", err)
-		return nil
+		return nil, nil
 	}
 
 	scanner := bufio.NewScanner(stdout)
@@ -30,19 +30,37 @@ func ExtractList() []string {
 
 	if err := scanner.Err(); err != nil {
 		fmt.Println("Error reading from scanner:", err)
-		return nil
+		return nil, nil
 	}
 
 	if err := cmd.Wait(); err != nil {
 		fmt.Println("Error waiting for command:", err)
-		return nil
+		return nil, nil
 	}
 
+	var data []string
 	var repos []string
+	var desc []string
 
 	for _, lines := range outputLines {
-		repos = append(repos, lines)
+		data = append(data, lines)
 	}
 
-	return repos
+	for _, lines := range data {
+		fmt.Println(lines)
+		if lines == "DescSec" {
+			data = data[1:]
+			break
+		}
+
+		repos = append(repos, lines)
+		data = data[1:]
+	}
+
+	for _, lines := range data {
+		fmt.Println(lines)
+		desc = append(desc, lines)
+	}
+
+	return repos, desc
 }
