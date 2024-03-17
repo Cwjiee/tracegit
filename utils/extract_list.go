@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"strings"
 )
 
 func ExtractList() []string {
@@ -47,7 +48,12 @@ func ExtractList() []string {
 		return nil
 	}
 
-	fmt.Println("Ruby script output:")
+	var repos []string
 
-	return outputLines
+	for _, lines := range outputLines {
+		lines = strings.Trim(lines, "\"")
+		repos = append(repos, lines)
+	}
+
+	return repos
 }

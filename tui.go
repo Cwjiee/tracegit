@@ -1,6 +1,7 @@
 package main
 
 import (
+	"charm-ui/utils"
 	"fmt"
 	"os"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+var repos []string
 var docStyle = lipgloss.NewStyle().Margin(1, 2)
 
 type item struct {
@@ -48,29 +50,15 @@ func (m model) View() string {
 }
 
 func main() {
-	items := []list.Item{
-		item{title: "Raspberry Pi’s", desc: "I have ’em all over my house"},
-		item{title: "Nutella", desc: "It's good on toast"},
-		item{title: "Bitter melon", desc: "It cools you down"},
-		item{title: "Nice socks", desc: "And by that I mean socks without holes"},
-		item{title: "Eight hours of sleep", desc: "I had this once"},
-		item{title: "Cats", desc: "Usually"},
-		item{title: "Plantasia, the album", desc: "My plants love it too"},
-		item{title: "Pour over coffee", desc: "It takes forever to make though"},
-		item{title: "VR", desc: "Virtual reality...what is there to say?"},
-		item{title: "Noguchi Lamps", desc: "Such pleasing organic forms"},
-		item{title: "Linux", desc: "Pretty much the best OS"},
-		item{title: "Business school", desc: "Just kidding"},
-		item{title: "Pottery", desc: "Wet clay is a great feeling"},
-		item{title: "Shampoo", desc: "Nothing like clean hair"},
-		item{title: "Table tennis", desc: "It’s surprisingly exhausting"},
-		item{title: "Milk crates", desc: "Great for packing in your extra stuff"},
-		item{title: "Afternoon tea", desc: "Especially the tea sandwich part"},
-		item{title: "Stickers", desc: "The thicker the vinyl the better"},
+	repos = utils.ExtractList()
+	items := make([]list.Item, 0)
+
+	for _, repo := range repos {
+		items = append(items, item{title: repo, desc: "default description"})
 	}
 
 	m := model{list: list.New(items, list.NewDefaultDelegate(), 0, 0)}
-	m.list.Title = "My Fave Things"
+	m.list.Title = "Git Directories"
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
 
