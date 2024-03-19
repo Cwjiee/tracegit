@@ -6,20 +6,24 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
 func ExtractList() ([]string, []string) {
-	pathExist := pathExist()
 
-	workingDir := getPath(pathExist)
-
-	dir, err := os.Getwd()
+	ex, err := os.Executable()
 	if err != nil {
-		fmt.Println("error getting current directory: ", err)
+		panic(err)
 	}
 
-	currentpath := dir + "/trace.rb"
+	binPath := filepath.Dir(ex)
+
+	pathExist := pathExist(binPath)
+
+	workingDir := getPath(pathExist, binPath)
+
+	currentpath := binPath + "/../trace.rb"
 	cmd := exec.Command("ruby", currentpath, workingDir)
 
 	stdout, err := cmd.StdoutPipe()
@@ -76,8 +80,9 @@ func ExtractList() ([]string, []string) {
 	return repos, desc
 }
 
-func pathExist() bool {
-	f, err := os.Stat("data/path")
+func pathExist(binPath string) bool {
+
+	f, err := os.Stat(binPath + "/../data/path")
 	if err != nil {
 		log.Fatal(err)
 		return false
@@ -90,7 +95,7 @@ func pathExist() bool {
 	return false
 }
 
-func getPath(pathExist bool) string {
+func getPath(pathExist bool, binPath string) string {
 
 	var path string
 
@@ -103,13 +108,13 @@ func getPath(pathExist bool) string {
 		}
 
 		data := []byte(path)
-		err2 := os.WriteFile("data/path", data, 0644)
+		err2 := os.WriteFile(binPath+"/../data/path", data, 0644)
 		if err2 != nil {
 			log.Fatal(err)
 		}
 
 	} else {
-		data, err := os.ReadFile("data/path")
+		data, err := os.ReadFile(binPath + "/../data/path")
 		if err != nil {
 			log.Fatal(err)
 		}
