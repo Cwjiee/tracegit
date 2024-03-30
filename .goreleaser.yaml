@@ -45,3 +45,16 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+
+brews:
+  - name: Cwjiee
+    description: a TUI application to list your local repositories
+    homepage: https://github.com/Cwjiee/tracegit
+    tap:
+      owner: Cwjiee
+      name: tracegit
+    commit_author:
+      name: Cwjiee
+      email: jackchong398@gmail.com
+    folder: Formula
+
