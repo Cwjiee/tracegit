@@ -23,7 +23,7 @@ func ExtractList() ([]string, []string) {
 
 	workingDir := getPath(pathExist, binPath)
 
-	currentpath := binPath + "/../trace.rb"
+	currentpath := binPath + "/../../trace.rb"
 	cmd := exec.Command("ruby", currentpath, workingDir)
 
 	stdout, err := cmd.StdoutPipe()
@@ -82,7 +82,7 @@ func ExtractList() ([]string, []string) {
 
 func pathExist(binPath string) bool {
 
-	f, err := os.Stat(binPath + "/../data/path")
+	f, err := os.Stat(binPath + "/../../data/path")
 	if err != nil {
 		log.Fatal(err)
 		return false
@@ -108,13 +108,13 @@ func getPath(pathExist bool, binPath string) string {
 		}
 
 		data := []byte(path)
-		err2 := os.WriteFile(binPath+"/../data/path", data, 0644)
+		err2 := os.WriteFile(binPath+"/../../data/path", data, 0644)
 		if err2 != nil {
 			log.Fatal(err)
 		}
 
 	} else {
-		data, err := os.ReadFile(binPath + "/../data/path")
+		data, err := os.ReadFile(binPath + "/../../data/path")
 		if err != nil {
 			log.Fatal(err)
 		}
