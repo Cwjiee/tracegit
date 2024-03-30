@@ -1,4 +1,4 @@
-class GitTrace
+class Trace
   def initialize()
     @path = $work_dir
     @git_folders = []
@@ -9,8 +9,9 @@ class GitTrace
     recursive_read
     truncate_git_folders
 
-    @git_paths.map! { |git_path| git_path.join("/") }
-    @git_paths.each { |git_path| puts git_path }
+    @git_paths
+      .map! { |git_path| git_path.join("/") }
+      .each { |git_path| puts git_path }
 
     puts "DescSec"
 
@@ -40,4 +41,4 @@ class GitTrace
 end
 
 $work_dir = ARGV[0]
-GitTrace.new.list
+Trace.new.list
