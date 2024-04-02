@@ -52,7 +52,7 @@ brews:
     homepage: https://github.com/Cwjiee/tracegit
     tap:
       owner: Cwjiee
-      name: tracegit
+      name: homebrew-tracegit
     commit_author:
       name: Cwjiee
       email: jackchong398@gmail.com
