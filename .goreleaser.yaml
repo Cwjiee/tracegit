@@ -49,7 +49,7 @@ changelog:
 brews:
   - name: Cwjiee
     description: a TUI application to list your local repositories
-    homepage: https://github.com/Cwjiee/tracegit
+    homepage: https://github.com/Cwjiee/homebrew-tracegit
     tap:
       owner: Cwjiee
       name: homebrew-tracegit
