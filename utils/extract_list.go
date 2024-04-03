@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -23,7 +24,7 @@ func ExtractList() ([]string, []string) {
 
 	workingDir := getPath(pathExist, binPath)
 
-	currentpath := binPath + "/../../trace.rb"
+	currentpath := binPath + "/trace.rb"
 	cmd := exec.Command("ruby", currentpath, workingDir)
 
 	stdout, err := cmd.StdoutPipe()
@@ -82,10 +83,14 @@ func ExtractList() ([]string, []string) {
 
 func pathExist(binPath string) bool {
 
-	f, err := os.Stat(binPath + "/../../data/path")
+	f, err := os.Stat(binPath + "/path")
 	if err != nil {
-		log.Fatal(err)
-		return false
+		if errors.Is(err, os.ErrNotExist) {
+			return false
+		} else {
+			log.Fatal(err)
+			return false
+		}
 	}
 
 	if f.Size() > 0 {
@@ -100,21 +105,16 @@ func getPath(pathExist bool, binPath string) string {
 	var path string
 
 	if !pathExist {
-		fmt.Println("Enter a path:")
-		_, err := fmt.Scan(&path)
-		if err != nil {
-			log.Fatal(err)
-			return ""
-		}
+		path = pathPrompt()
 
 		data := []byte(path)
-		err2 := os.WriteFile(binPath+"/../../data/path", data, 0644)
-		if err2 != nil {
+		err := os.WriteFile(binPath+"/path", data, 0644)
+		if err != nil {
 			log.Fatal(err)
 		}
 
 	} else {
-		data, err := os.ReadFile(binPath + "/../../data/path")
+		data, err := os.ReadFile(binPath + "/path")
 		if err != nil {
 			log.Fatal(err)
 		}
