@@ -1,60 +1,75 @@
 package utils
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
-	"log"
+	"io/fs"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 )
 
+const rubyScript = `
+    class Trace
+      def initialize()
+        @path = $work_dir
+        @git_folders = []
+        @git_paths = []
+      end
+
+      def list
+        recursive_read
+        truncate_git_folders
+
+        @git_paths
+          .map! { |git_path| git_path.join("/") }
+          .each { |git_path| puts git_path }
+
+        puts "DescSec"
+
+        @git_paths.each do |git_path|
+          pathname = "#{@path}/#{git_path}/.git/description"
+          puts File.read(pathname)
+        end
+      end
+
+      def recursive_read
+        Dir.glob("**/*/", File::FNM_DOTMATCH, base: @path) do |entry_name|
+          @git_folders << entry_name if entry_name.include?(".git/")
+        end
+      end
+
+      def truncate_git_folders
+        @git_folders.each do |entry_name|
+          dot_path = entry_name.split("/")
+
+          if dot_path.last == ".git"
+            dot_path.pop # get rid of ".git"
+            @git_paths << dot_path
+          end
+        end
+      end
+
+    end
+
+    $work_dir = ARGV[0]
+    Trace.new.list
+`
+
 func ExtractList() ([]string, []string) {
 
-	ex, err := os.Executable()
+	pathExist := pathExist()
+
+	workingDir := getPath(pathExist)
+
+	cmd := exec.Command("ruby", "-e", rubyScript, workingDir)
+
+	output, err := cmd.CombinedOutput()
 	if err != nil {
-		panic(err)
+		fmt.Println("Error executing Ruby script:", err)
 	}
 
-	binPath := filepath.Dir(ex)
-
-	pathExist := pathExist(binPath)
-
-	workingDir := getPath(pathExist, binPath)
-
-	currentpath := binPath + "/trace.rb"
-	cmd := exec.Command("ruby", currentpath, workingDir)
-
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		fmt.Println("Error creating StdoutPipe:", err)
-		return nil, nil
-	}
-
-	if err := cmd.Start(); err != nil {
-		fmt.Println("error starting command:", err)
-		return nil, nil
-	}
-
-	scanner := bufio.NewScanner(stdout)
-
-	var outputLines []string
-
-	for scanner.Scan() {
-		outputLines = append(outputLines, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		fmt.Println("Error reading from scanner:", err)
-		return nil, nil
-	}
-
-	if err := cmd.Wait(); err != nil {
-		fmt.Println("Error waiting for command:", err)
-		return nil, nil
-	}
+	outputLines := strings.Split(string(output), "\n")
 
 	var data []string
 	var repos []string
@@ -81,16 +96,12 @@ func ExtractList() ([]string, []string) {
 	return repos, desc
 }
 
-func pathExist(binPath string) bool {
+func pathExist() bool {
 
-	f, err := os.Stat(binPath + "/path")
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			return false
-		} else {
-			log.Fatal(err)
-			return false
-		}
+	homeDir := getHomeDir()
+	f, err := os.Stat(homeDir)
+	if errors.Is(err, fs.ErrNotExist) {
+		return false
 	}
 
 	if f.Size() > 0 {
@@ -98,30 +109,4 @@ func pathExist(binPath string) bool {
 	}
 
 	return false
-}
-
-func getPath(pathExist bool, binPath string) string {
-
-	var path string
-
-	if !pathExist {
-		path = pathPrompt()
-
-		data := []byte(path)
-		err := os.WriteFile(binPath+"/path", data, 0644)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-	} else {
-		data, err := os.ReadFile(binPath + "/path")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		path = string(data)
-		path = strings.TrimSpace(path)
-	}
-
-	return path
 }

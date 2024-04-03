@@ -23,7 +23,9 @@ class Trace
 
   def recursive_read
     Dir.glob("**/*/", File::FNM_DOTMATCH, base: @path) do |entry_name|
-      @git_folders << entry_name if entry_name.include?(".git/")
+      # @git_folders << entry_name if entry_name.include?(".git/")
+      puts @path
+      puts entry_name
     end
   end
 
