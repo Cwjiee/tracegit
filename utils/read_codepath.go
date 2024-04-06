@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func getPath(pathExist bool) string {
+func GetPath(pathExist bool) string {
 
 	var path string
 

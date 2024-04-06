@@ -8,7 +8,7 @@ import (
 	"os/user"
 )
 
-func pathExist() bool {
+func DotpathExist() bool {
 
 	homeDir := getHomeDir()
 	f, err := os.Stat(homeDir)

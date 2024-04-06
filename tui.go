@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/Cwjiee/tracegit/utils"
 
@@ -52,11 +53,16 @@ func (m model) View() string {
 }
 
 func main() {
-	repos, desc = utils.ExtractList()
 	items := make([]list.Item, 0)
+	pathExist := utils.DotpathExist()
+	prefix := utils.GetPath(pathExist)
+
+	repos := utils.ExtractList(prefix)
+	descs := utils.ExtractDesc(repos)
 
 	for i, repo := range repos {
-		items = append(items, item{title: repo, desc: desc[i]})
+		repo, _ = strings.CutPrefix(repo, prefix+"/")
+		items = append(items, item{title: repo, desc: descs[i]})
 	}
 
 	m := model{list: list.New(items, list.NewDefaultDelegate(), 0, 0)}
