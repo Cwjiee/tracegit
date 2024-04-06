@@ -8,27 +8,38 @@ This is a TUI application that shows all your local git repositories in one plac
 
 ## Installation
 
-1. install the package
+1. set system type
+
+```bash
+systype=$(uname -m)
+```
+
+2. install the package
 ### For Mac users
 ```bash
-curl -L https://github.com/Cwjiee/tracegit/releases/latest/download/tracegit_Darwin_arm64.tar.gz > tracegit.tar.gz
+curl -L https://github.com/Cwjiee/tracegit/releases/latest/download/tracegit_Darwin_"$systype".tar.gz > tracegit.tar.gz
 ```
 ### For Linux/Wsl users
 ```bash
-curl -L https://github.com/Cwjiee/tracegit/releases/latest/download/tracegit_Linux_x86_64_.tar.gz > tracegit.tar.gz
+curl -L https://github.com/Cwjiee/tracegit/releases/latest/download/tracegit_Linux_"$systype".tar.gz > tracegit.tar.gz
 ```
 
-2. extract the tar file
+3. extract the tar file
 ```bash
 tar -xzf tracegit.tar.gz
 ```
 
-3. move file to binaries
+4. move file to binaries
 ```bash
 sudo mv tracegit /usr/local/bin
 ```
 ## Usage
-1. when you first use the tool, it will prompt you to enter your code directory (the path where you store your repos)
+1. execute the command
+```bash
+tracegit
+```
+
+2. when you first use the tool, it will prompt you to enter your code directory (path where you store your repos)
 
 #### Example
 ```
@@ -38,9 +49,11 @@ sudo mv tracegit /usr/local/bin
 # Mac
 /Users/weijie/code
 ```
-2. input your path to the prompt
-3. use `tracegit` anywhere in your terminal!
+3. input your path to the prompt
+
+4. use `tracegit` anywhere in your terminal!
 
 ```bash
 tracegit
 ```
+
