@@ -7,14 +7,15 @@ import (
 
 	"github.com/Cwjiee/tracegit/utils"
 
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
-var repos []string
-var desc []string
 var docStyle = lipgloss.NewStyle().Margin(1, 2)
+var items []list.Item
 
 type item struct {
 	title, desc string
@@ -24,8 +25,44 @@ func (i item) Title() string       { return i.title }
 func (i item) Description() string { return i.desc }
 func (i item) FilterValue() string { return i.title }
 
+type listKeyMap struct {
+	editPath key.Binding
+}
+
+func newListKeyMap() *listKeyMap {
+	return &listKeyMap{
+		editPath: key.NewBinding(
+			key.WithKeys("e"),
+			key.WithHelp("e", "edit code path"),
+		),
+	}
+}
+
 type model struct {
-	list list.Model
+	list      list.Model
+	textInput textinput.Model
+	keys      *listKeyMap
+	EditMode  bool
+}
+
+func newModel(items []list.Item, currentPath string) model {
+	var listKeys = newListKeyMap()
+
+	repoList := list.New(items, list.NewDefaultDelegate(), 0, 0)
+	repoList.Title = "Git Directories"
+
+	textInput := textinput.New()
+	textInput.Placeholder = "/Users/weijie/code"
+	textInput.SetValue(currentPath)
+	textInput.Focus()
+	textInput.CharLimit = 35
+	textInput.Width = 25
+
+	return model{
+		list:      repoList,
+		keys:      listKeys,
+		textInput: textInput,
+	}
 }
 
 func (m model) Init() tea.Cmd {
@@ -33,27 +70,82 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		if msg.String() == "ctrl+c" {
+	if msg, ok := msg.(tea.KeyMsg); ok {
+		k := msg.String()
+		if k == "q" || k == "esc" || k == "ctrl+c" {
 			return m, tea.Quit
 		}
+	}
+
+	if !m.EditMode {
+		return updateMain(msg, m)
+	}
+	return updateEdit(msg, m)
+}
+
+func updateMain(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		h, v := docStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
+	case tea.KeyMsg:
+		if m.list.FilterState() == list.Filtering {
+			break
+		}
+		switch msg.Type {
+		case tea.KeyCtrlC, tea.KeyEsc:
+			return m, tea.Quit
+		case tea.KeyCtrlE:
+			m.EditMode = true
+			return m, nil
+		}
 	}
 
 	var cmd tea.Cmd
 	m.list, cmd = m.list.Update(msg)
+
+	return m, cmd
+}
+
+func updateEdit(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
+
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.Type {
+		case tea.KeyCtrlC, tea.KeyEsc:
+			return m, tea.Quit
+		case tea.KeyEnter:
+			utils.WritePath(m.textInput.Value())
+			getFormatedData()
+			cmd = m.list.SetItems(items)
+			m.EditMode = false
+			return m, cmd
+		}
+	}
+
+	m.textInput, cmd = m.textInput.Update(msg)
 	return m, cmd
 }
 
 func (m model) View() string {
-	return docStyle.Render(m.list.View())
+	if !m.EditMode {
+		return docStyle.Render(m.list.View())
+	} else {
+		return docStyle.Render("\n" + editView(m) + "\n")
+	}
 }
 
-func main() {
-	items := make([]list.Item, 0)
+func editView(m model) string {
+	return fmt.Sprintf(
+		"Edit your path\n\n%s\n\n%s",
+		m.textInput.View(),
+		"(esc to quit)",
+	) + "\n"
+}
+
+func getFormatedData() []list.Item {
+	items = nil
 	pathExist := utils.DotpathExist()
 	prefix := utils.GetPath(pathExist)
 
@@ -64,11 +156,13 @@ func main() {
 		repo, _ = strings.CutPrefix(repo, prefix+"/")
 		items = append(items, item{title: repo, desc: descs[i]})
 	}
+	return items
+}
 
-	m := model{list: list.New(items, list.NewDefaultDelegate(), 0, 0)}
-	m.list.Title = "Git Directories"
-
-	p := tea.NewProgram(m, tea.WithAltScreen())
+func main() {
+	getFormatedData()
+	prefix := utils.GetPath(true)
+	p := tea.NewProgram(newModel(items, prefix), tea.WithAltScreen())
 
 	if _, err := p.Run(); err != nil {
 		fmt.Println("Error running program:", err)

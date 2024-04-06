@@ -11,26 +11,13 @@ func GetPath(pathExist bool) string {
 
 	var path string
 
-	homeDir := getHomeDir()
-
 	if !pathExist {
-		path = pathPrompt()
-
-		f, err := os.Create(homeDir)
-		if err != nil {
-			fmt.Println("Error creating file", err)
-		}
-
-		defer f.Close()
-
-		data := []byte(path)
-
-		err = os.WriteFile(homeDir, data, 0644)
-		if err != nil {
-			fmt.Println("Error writing file", err)
-		}
-
+		path = PathPrompt()
+		WritePath(path)
 	} else {
+
+		homeDir := getHomeDir()
+
 		data, err := os.ReadFile(homeDir)
 		if err != nil {
 			log.Fatal(err)
@@ -41,4 +28,21 @@ func GetPath(pathExist bool) string {
 	}
 
 	return path
+}
+
+func WritePath(path string) {
+	homeDir := getHomeDir()
+	f, err := os.Create(homeDir)
+	if err != nil {
+		fmt.Println("Error creating file", err)
+	}
+
+	defer f.Close()
+
+	data := []byte(path)
+
+	err = os.WriteFile(homeDir, data, 0644)
+	if err != nil {
+		fmt.Println("Error writing file", err)
+	}
 }
