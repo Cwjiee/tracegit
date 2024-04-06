@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/Cwjiee/tracegit/utils"
@@ -16,6 +17,7 @@ import (
 
 var docStyle = lipgloss.NewStyle().Margin(1, 2)
 var items []list.Item
+var redirectRepo string
 
 type item struct {
 	title, desc string
@@ -98,6 +100,10 @@ func updateMain(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 		case tea.KeyCtrlE:
 			m.EditMode = true
 			return m, nil
+		case tea.KeyEnter:
+			itemIndex := m.list.Index()
+			redirectRepo = items[itemIndex].FilterValue()
+			return m, tea.Quit
 		}
 	}
 
@@ -162,10 +168,20 @@ func getFormatedData() []list.Item {
 func main() {
 	getFormatedData()
 	prefix := utils.GetPath(true)
+
 	p := tea.NewProgram(newModel(items, prefix), tea.WithAltScreen())
 
 	if _, err := p.Run(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
+	}
+
+	if redirectRepo != "" {
+		redirectRepoPath := prefix + "/" + redirectRepo
+		cmd := exec.Command("zed", redirectRepoPath)
+		if err := cmd.Run(); err != nil {
+			cmd = exec.Command("vim", redirectRepoPath)
+			cmd.Run()
+		}
 	}
 }
