@@ -1,10 +1,7 @@
 package utils
 
 import (
-	"errors"
 	"fmt"
-	"io/fs"
-	"os"
 	"os/exec"
 	"strings"
 )
@@ -94,19 +91,4 @@ func ExtractList() ([]string, []string) {
 	}
 
 	return repos, desc
-}
-
-func pathExist() bool {
-
-	homeDir := getHomeDir()
-	f, err := os.Stat(homeDir)
-	if errors.Is(err, fs.ErrNotExist) {
-		return false
-	}
-
-	if f.Size() > 0 {
-		return true
-	}
-
-	return false
 }
