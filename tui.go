@@ -19,6 +19,16 @@ var docStyle = lipgloss.NewStyle().Margin(1, 2)
 var items []list.Item
 var redirectRepo string
 
+const (
+	purple   = lipgloss.Color("#8F00FF")
+	darkGray = lipgloss.Color("#767676")
+)
+
+var (
+	inputTitle = lipgloss.NewStyle().Foreground(purple)
+	inputHelp  = lipgloss.NewStyle().Foreground(darkGray)
+)
+
 type item struct {
 	title, desc string
 }
@@ -149,9 +159,10 @@ func (m model) View() string {
 
 func editView(m model) string {
 	return fmt.Sprintf(
-		"Edit your path\n\n%s\n\n%s",
+		"%s\n\n%s\n\n%s",
+		inputTitle.Width(20).Render("Edit your path"),
 		m.textInput.View(),
-		"(esc to quit)  (enter to confirm changes)",
+		inputHelp.Width(50).Render("(esc to quit)  (enter to confirm changes)"),
 	) + "\n"
 }
 
