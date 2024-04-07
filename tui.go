@@ -34,8 +34,8 @@ type listKeyMap struct {
 func newListKeyMap() *listKeyMap {
 	return &listKeyMap{
 		editPath: key.NewBinding(
-			key.WithKeys("e"),
-			key.WithHelp("e", "edit code path"),
+			key.WithKeys("ctrl + e"),
+			key.WithHelp("ctrl + e", "edit code path"),
 		),
 	}
 }
@@ -52,6 +52,11 @@ func newModel(items []list.Item, currentPath string) model {
 
 	repoList := list.New(items, list.NewDefaultDelegate(), 0, 0)
 	repoList.Title = "Git Directories"
+	repoList.AdditionalShortHelpKeys = func() []key.Binding {
+		return []key.Binding{
+			listKeys.editPath,
+		}
+	}
 
 	textInput := textinput.New()
 	textInput.Placeholder = "/Users/weijie/code"
