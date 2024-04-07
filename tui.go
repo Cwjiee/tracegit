@@ -151,7 +151,7 @@ func editView(m model) string {
 	return fmt.Sprintf(
 		"Edit your path\n\n%s\n\n%s",
 		m.textInput.View(),
-		"(esc to quit)",
+		"(esc to quit)  (enter to confirm changes)",
 	) + "\n"
 }
 
