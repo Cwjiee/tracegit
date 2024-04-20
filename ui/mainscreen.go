@@ -72,7 +72,8 @@ func (m rootScreenModel) SwitchScreen(model tea.Model) (tea.Model, tea.Cmd) {
 	return m.model, m.model.Init()
 }
 
-func InitializeScreen() {
+func InitializeScreen(edit bool) {
+	editMode = edit
 	getFormatedData()
 	currentPath = utils.GetPath(true)
 
