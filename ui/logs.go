@@ -3,18 +3,17 @@ package ui
 import (
 	"github.com/Cwjiee/tracegit/utils"
 	"github.com/charmbracelet/bubbles/table"
-	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
 var baseStyle = lipgloss.NewStyle().
 	BorderStyle(lipgloss.NormalBorder()).
-	BorderForeground(lipgloss.Color("240"))
+	BorderForeground(lipgloss.Color("240")).
+	Margin(0, 2)
 
 type logModel struct {
-	table table.Model
-	view  viewport.Model
+	log, contribution table.Model
 }
 
 func (m *logModel) Init() tea.Cmd { return nil }
@@ -25,10 +24,10 @@ func (m *logModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "esc":
-			if m.table.Focused() {
-				m.table.Blur()
+			if m.log.Focused() {
+				m.log.Blur()
 			} else {
-				m.table.Focus()
+				m.log.Focus()
 			}
 		case "q", "ctrl+c":
 			return m, tea.Quit
@@ -43,53 +42,67 @@ func (m *logModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return RootScreen().SwitchScreen(&listScreen)
 		}
 	}
-	m.table, cmd = m.table.Update(msg)
+	m.log, cmd = m.log.Update(msg)
 	return m, cmd
 }
 
 func (m *logModel) View() string {
-	return baseStyle.Render(m.table.View()) + "\n"
+	return baseStyle.Render(m.log.View()) + "\n\n\n\tContribution\n" + baseStyle.Render(m.contribution.View())
 }
 
 func logScreen() logModel {
 	// commit log
-	columns := []table.Column{
-		{Title: "Hash", Width: 20},
-		{Title: "Message", Width: 60},
-		{Title: "Author", Width: 60},
+	logColumns := []table.Column{
+		{Title: "Hash", Width: 60},
+		{Title: "Message", Width: 50},
+		{Title: "Author", Width: 30},
 	}
 
-	rows := utils.GetLogs(redirectRepo)
+	ContrColomns := []table.Column{
+		{Title: "Contributors", Width: 40},
+		{Title: "Contribution count", Width: 40},
+		{Title: "Percentage", Width: 40},
+	}
 
-	t := table.New(
-		table.WithColumns(columns),
+	rows, commiters := utils.GetLogs(redirectRepo)
+
+	t1 := table.New(
+		table.WithColumns(logColumns),
 		table.WithRows(rows),
 		table.WithFocused(true),
-		table.WithHeight(30),
+		table.WithHeight(25),
 	)
 
-	s := table.DefaultStyles()
-	s.Header = s.Header.
+	t2 := table.New(
+		table.WithColumns(ContrColomns),
+		table.WithRows(commiters),
+		table.WithFocused(false),
+		table.WithHeight(10),
+	)
+
+	s1 := table.DefaultStyles()
+	s1.Header = s1.Header.
 		BorderStyle(lipgloss.NormalBorder()).
 		BorderForeground(lipgloss.Color("240")).
 		BorderBottom(true).
 		Bold(false)
-	s.Selected = s.Selected.
+	s1.Selected = s1.Selected.
 		Foreground(lipgloss.Color("229")).
 		Background(lipgloss.Color("57")).
 		Bold(false)
-	t.SetStyles(s)
 
-	// contribution
-	v := viewport.New(140, 10)
-	v.Style = lipgloss.NewStyle().
-		BorderStyle(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("62")).
-		PaddingRight(2)
-	v.SetContent("s string")
+	s2 := table.DefaultStyles()
+	s2.Header = s2.Header.
+		BorderStyle(lipgloss.NormalBorder()).
+		BorderForeground(lipgloss.Color("240")).
+		BorderBottom(true).
+		Bold(false)
+
+	t1.SetStyles(s1)
+	t2.SetStyles(s2)
 
 	return logModel{
-		table: t,
-		view:  v,
+		log:          t1,
+		contribution: t2,
 	}
 }

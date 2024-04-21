@@ -36,7 +36,7 @@ func GetContent(repo string) string {
 	return content
 }
 
-func GetLogs(repo string) []table.Row {
+func GetLogs(repo string) ([]table.Row, []table.Row) {
 	r, err := git.PlainOpen(repo)
 	if err != nil {
 		fmt.Println(err)
@@ -52,9 +52,11 @@ func GetLogs(repo string) []table.Row {
 		log.Fatalf("Failed to retrieve commit history: %v", err)
 	}
 
-	// var commits []*object.Commit
 	var commits []table.Row
+	var commiters []string
+
 	err = logs.ForEach(func(commit *object.Commit) error {
+		commiters = append(commiters, commit.Committer.Name)
 		commits = append(commits, table.Row{commit.Hash.String(), commit.Message, commit.Committer.Name})
 		return nil
 	})
@@ -62,5 +64,18 @@ func GetLogs(repo string) []table.Row {
 		log.Fatalf("Failed to iterate over commits: %v", err)
 	}
 
-	return commits
+	commiters_count := make(map[string]int)
+	var totalCount int
+	for _, commiter := range commiters {
+		commiters_count[commiter]++
+		totalCount++
+	}
+
+	var commitersData []table.Row
+	for commiter, count := range commiters_count {
+		percentage := (count * 100) / totalCount
+		commitersData = append(commitersData, table.Row{commiter, fmt.Sprintf("%d", count), fmt.Sprintf("%d", percentage) + "%"})
+	}
+
+	return commits, commitersData
 }
