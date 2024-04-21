@@ -3,6 +3,7 @@ package ui
 import (
 	"github.com/Cwjiee/tracegit/utils"
 	"github.com/charmbracelet/bubbles/table"
+	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -13,6 +14,7 @@ var baseStyle = lipgloss.NewStyle().
 
 type logModel struct {
 	table table.Model
+	view  viewport.Model
 }
 
 func (m *logModel) Init() tea.Cmd { return nil }
@@ -50,6 +52,7 @@ func (m *logModel) View() string {
 }
 
 func logScreen() logModel {
+	// commit log
 	columns := []table.Column{
 		{Title: "Hash", Width: 20},
 		{Title: "Message", Width: 60},
@@ -62,7 +65,7 @@ func logScreen() logModel {
 		table.WithColumns(columns),
 		table.WithRows(rows),
 		table.WithFocused(true),
-		table.WithHeight(40),
+		table.WithHeight(30),
 	)
 
 	s := table.DefaultStyles()
@@ -77,5 +80,16 @@ func logScreen() logModel {
 		Bold(false)
 	t.SetStyles(s)
 
-	return logModel{t}
+	// contribution
+	v := viewport.New(140, 10)
+	v.Style = lipgloss.NewStyle().
+		BorderStyle(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("62")).
+		PaddingRight(2)
+	v.SetContent("s string")
+
+	return logModel{
+		table: t,
+		view:  v,
+	}
 }
