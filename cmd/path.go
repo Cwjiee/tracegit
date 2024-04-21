@@ -10,13 +10,9 @@ import (
 
 var pathCmd = &cobra.Command{
 	Use:   "path",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "edit your code directory path",
+	Long: `input your code directory where you store all your projects.
+	It will be the directory where Tracegit looks for your git repositories`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ui.InitializeScreen(true)
 	},

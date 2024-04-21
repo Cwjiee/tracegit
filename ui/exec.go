@@ -12,12 +12,6 @@ type editorFinishedMsg struct{ err error }
 var choices = []string{"nvim", "vim", "vscode", "nano", "zed"}
 
 func openEditor(choice string) tea.Cmd {
-	// editor := os.Getenv("EDITOR")
-	// err := os.Chdir(redirectRepo)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
 	editor := choice
 	if choice == "" {
 		editor = "vim"
