@@ -62,12 +62,18 @@ func (m *listModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyCtrlE:
 			editScreen := editScreen()
 			return RootScreen().SwitchScreen(&editScreen)
-		case tea.KeyEnter, tea.KeyRight:
+		case tea.KeyRight:
 			itemIndex := m.list.Index()
 			repo := items[itemIndex].FilterValue()
 			redirectRepo = currentPath + "/" + repo
 			logScreen := logScreen()
 			return RootScreen().SwitchScreen(&logScreen)
+		case tea.KeyEnter:
+			itemIndex := m.list.Index()
+			repo := items[itemIndex].FilterValue()
+			redirectRepo = currentPath + "/" + repo
+			execScreen := execScreen()
+			return RootScreen().SwitchScreen(&execScreen)
 		}
 	}
 
