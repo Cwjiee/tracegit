@@ -155,8 +155,8 @@ func (m listModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			itemIndex := m.list.Index()
 			repo := items[itemIndex].FilterValue()
 			redirectRepo = currentPath + "/" + repo
-			infoScreen := infoScreen()
-			return RootScreen().SwitchScreen(&infoScreen)
+			logScreen := logScreen()
+			return RootScreen().SwitchScreen(&logScreen)
 		}
 	}
 	// 	var cmd tea.Cmd

@@ -3,8 +3,13 @@ package utils
 import (
 	"fmt"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/charmbracelet/bubbles/table"
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing/object"
 )
 
 func GetContent(repo string) string {
@@ -29,4 +34,33 @@ func GetContent(repo string) string {
 		fmt.Println("Error walking repo dir", err)
 	}
 	return content
+}
+
+func GetLogs(repo string) []table.Row {
+	r, err := git.PlainOpen(repo)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	ref, err := r.Head()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	logs, err := r.Log(&git.LogOptions{From: ref.Hash()})
+	if err != nil {
+		log.Fatalf("Failed to retrieve commit history: %v", err)
+	}
+
+	// var commits []*object.Commit
+	var commits []table.Row
+	err = logs.ForEach(func(commit *object.Commit) error {
+		commits = append(commits, table.Row{commit.Hash.String(), commit.Message, commit.Committer.Name})
+		return nil
+	})
+	if err != nil {
+		log.Fatalf("Failed to iterate over commits: %v", err)
+	}
+
+	return commits
 }
