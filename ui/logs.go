@@ -15,9 +15,9 @@ type logModel struct {
 	table table.Model
 }
 
-func (m logModel) Init() tea.Cmd { return nil }
+func (m *logModel) Init() tea.Cmd { return nil }
 
-func (m logModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *logModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
@@ -30,17 +30,22 @@ func (m logModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case "q", "ctrl+c":
 			return m, tea.Quit
-		case "enter":
-			return m, tea.Batch(
-				tea.Printf("Let's go to %s!", m.table.SelectedRow()[1]),
-			)
+		case "enter", tea.KeyRight.String():
+			infoScreen := infoScreen()
+			return RootScreen().SwitchScreen(&infoScreen)
+			// return m, tea.Batch(
+			// 	tea.Printf("Let's go to %s!", m.table.SelectedRow()[1]),
+			// )
+		case tea.KeyLeft.String():
+			listScreen := listScreen()
+			return RootScreen().SwitchScreen(&listScreen)
 		}
 	}
 	m.table, cmd = m.table.Update(msg)
 	return m, cmd
 }
 
-func (m logModel) View() string {
+func (m *logModel) View() string {
 	return baseStyle.Render(m.table.View()) + "\n"
 }
 

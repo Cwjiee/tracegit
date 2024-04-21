@@ -41,7 +41,7 @@ func listScreen() listModel {
 	}
 }
 
-func (m listModel) Init() tea.Cmd {
+func (m *listModel) Init() tea.Cmd {
 	return nil
 }
 
@@ -62,12 +62,12 @@ func (m *listModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyCtrlE:
 			editScreen := editScreen()
 			return RootScreen().SwitchScreen(&editScreen)
-		case tea.KeyEnter:
+		case tea.KeyEnter, tea.KeyRight:
 			itemIndex := m.list.Index()
 			repo := items[itemIndex].FilterValue()
 			redirectRepo = currentPath + "/" + repo
-			infoScreen := infoScreen()
-			return RootScreen().SwitchScreen(&infoScreen)
+			logScreen := logScreen()
+			return RootScreen().SwitchScreen(&logScreen)
 		}
 	}
 
@@ -75,6 +75,6 @@ func (m *listModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m listModel) View() string {
+func (m *listModel) View() string {
 	return docStyle.Render(m.list.View())
 }

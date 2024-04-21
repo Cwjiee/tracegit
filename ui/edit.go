@@ -26,7 +26,7 @@ func editScreen() editModel {
 
 }
 
-func (m editModel) Init() tea.Cmd {
+func (m *editModel) Init() tea.Cmd {
 	return nil
 }
 
@@ -53,7 +53,7 @@ func (m *editModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m editModel) View() string {
+func (m *editModel) View() string {
 	return fmt.Sprintf(
 		"\n%s\n\n%s\n\n%s\n",
 		inputTitle.Width(20).Render("Edit your path"),

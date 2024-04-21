@@ -38,7 +38,7 @@ func infoScreen() infoModel {
 	}
 }
 
-func (m infoModel) Init() tea.Cmd {
+func (m *infoModel) Init() tea.Cmd {
 	return nil
 }
 
@@ -55,6 +55,9 @@ func (m *infoModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyEsc:
 			listScreen := listScreen()
 			return RootScreen().SwitchScreen(&listScreen)
+		case tea.KeyLeft:
+			logScreen := logScreen()
+			return RootScreen().SwitchScreen(&logScreen)
 		}
 	default:
 		return m, nil
@@ -64,7 +67,7 @@ func (m *infoModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m infoModel) View() string {
+func (m *infoModel) View() string {
 	return docStyle.Render(m.viewport.View() + m.infoView())
 }
 

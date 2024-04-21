@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// traceCmd represents the trace command
 var pathCmd = &cobra.Command{
 	Use:   "path",
 	Short: "A brief description of your command",
