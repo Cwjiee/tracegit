@@ -42,10 +42,9 @@ func (m *editModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			utils.WritePath(m.textInput.Value())
 			getFormatedData()
 			currentPath = utils.GetPath(true)
-			// cmd = m.list.SetItems(items)
-			listScreen := listScreen()
-			return RootScreen().SwitchScreen(&listScreen)
-			// return m, cmd
+			// listScreen := listScreen()
+			// return RootScreen().SwitchScreen(&listScreen)
+			return m, tea.Quit
 		}
 	}
 

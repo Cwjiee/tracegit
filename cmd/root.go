@@ -8,7 +8,7 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "trace",
+	Use:   "trac",
 	Short: "A tui application for your local git repositories",
 	Long: `Tracegit is TUI application that shows all your local git repositories.
 This application is also able to check repository's information,
